@@ -50,13 +50,15 @@ const logout = TryCatch(async(req, res)=> {
 })
 
 const searchUser = TryCatch(async(req, res)=> {
+
+    const {name} = req.query;
+
     
     return res
     .status(200)
-    .cookie("chatterbox-token", "", {...cookieOptions, maxAge: 0})
     .json({
         success: true,
-        message: "Logged out successfully"
+        message: name
     });
 })
 
