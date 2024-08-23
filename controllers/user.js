@@ -26,40 +26,36 @@ const login = TryCatch(async (req, res, next) => {
   if (!user) return next(new ErrorHandler("Invalid Username or Password", 404));
   const isMatch = await compare(password, user.password);
 
-  if (!isMatch) return next(new ErrorHandler("Invalid Username or Password", 404));
+  if (!isMatch)
+    return next(new ErrorHandler("Invalid Username or Password", 404));
   sendToken(res, user, 200, `Welcome Back! ${user.name}`);
 });
 
-const getMyProfile = TryCatch(async(req, res)=> {
-    const user = await User.findById(req.user)
-    res.status(200).json({
-        success: true,
-        user
-    });
-})
+const getMyProfile = TryCatch(async (req, res) => {
+  const user = await User.findById(req.user);
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
 
-const logout = TryCatch(async(req, res)=> {
-    
-    return res
+const logout = TryCatch(async (req, res) => {
+  return res
     .status(200)
-    .cookie("chatterbox-token", "", {...cookieOptions, maxAge: 0})
+    .cookie("chatterbox-token", "", { ...cookieOptions, maxAge: 0 })
     .json({
-        success: true,
-        message: "Logged out successfully"
+      success: true,
+      message: "Logged out successfully",
     });
-})
+});
 
-const searchUser = TryCatch(async(req, res)=> {
+const searchUser = TryCatch(async (req, res) => {
+  const { name } = req.query;
 
-    const {name} = req.query;
+  return res.status(200).json({
+    success: true,
+    message: name,
+  });
+});
 
-    
-    return res
-    .status(200)
-    .json({
-        success: true,
-        message: name
-    });
-})
-
-export { login, newUser, getMyProfile, logout, searchUser};
+export { login, newUser, getMyProfile, logout, searchUser };
