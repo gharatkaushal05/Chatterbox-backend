@@ -11,6 +11,7 @@ import {
   getChatDetails,
   renameGroup,
   deleteChat,
+  getMessages,
 } from "../controllers/chat.js";
 import { attachmentsMulter } from "../middlewares/multer.js";
 
@@ -25,6 +26,7 @@ app.put("/addmembers", addMembers);
 app.put("/removemember", removeMembers);
 app.delete("/leave/:id",leaveGroup)
 app.post("/message", attachmentsMulter, sendAttachments)
+app.get("/message/:id",getMessages)
 app.route("/:id").get(getChatDetails).put(renameGroup).delete(deleteChat)
 
 export default app;
