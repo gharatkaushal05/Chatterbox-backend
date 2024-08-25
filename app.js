@@ -15,6 +15,7 @@ const port = process.env.PORT;
 const app = express()
 app.use(express.json())
 app.use(cookieParser())
+export const adminSecretKey = process.env.ADMIN_SECRET_KEY || "Gharat@123"
 connectDB(process.env.MONGO_URI)
 app.use("/user", userRoute)
 app.use("/chat", chatRoute)
