@@ -7,6 +7,7 @@ import { Server } from "socket.io"
 import {createServer} from "http"
 import { v4 as uuid } from "uuid"
 import cors from "cors"
+import { v2 as cloudinary }from "cloudinary"
 
 
 import userRoute from "./routes/user.js"
@@ -33,6 +34,14 @@ app.use(cors({
 export const adminSecretKey = process.env.ADMIN_SECRET_KEY || "Gharat@123"
 export const userSocketIDs= new Map()
 connectDB(process.env.MONGO_URI)
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+})
+console.log(process.env.CLOUDINARY_API_KEY);
+console.log(process.env.CLOUDINARY_CLOUD_NAME);
+console.log(process.env.CLOUDINARY_API_SECRET);
 app.use("/api/v1/user", userRoute)
 app.use("/api/v1/chat", chatRoute)
 app.use("/api/v1/admin", adminRoute)
