@@ -16,6 +16,8 @@ import adminRoute from "./routes/admin.js"
 import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js"
 import { getSockets } from "./lib/helper.js"
 import { Message } from "./models/message.js"
+import { corsOptions } from "./constants/config.js"
+import { socketAuthenticator } from "./middlewares/auth.js"
 
 dotenv.config({
     path: "./.env"
@@ -24,13 +26,12 @@ const port = process.env.PORT;
 export const envMode = process.env.NODE_ENV.trim() || "PRODUCTION";
 const app = express()
 const server = createServer(app)
-const io = new Server(server, {})
+const io = new Server(server, {
+    cors: corsOptions,
+})
 app.use(express.json())
 app.use(cookieParser())
-app.use(cors({
-    origin:["http://localhost:5173","http://localhost:4173", process.env.CLIENT_URL],
-    credentials: true
-}))
+app.use(cors(corsOptions))
 export const adminSecretKey = process.env.ADMIN_SECRET_KEY || "Gharat@123"
 export const userSocketIDs= new Map()
 connectDB(process.env.MONGO_URI)
@@ -48,14 +49,12 @@ app.use("/api/v1/admin", adminRoute)
 app.get("/",(req, res)=> {
     res.send("Hello World");
 })
-io.use((socket, next)=> {})
+io.use((socket, next)=> {
+    cookieParser()(socket.request, socket.request.res, async (err)=>  await socketAuthenticator(err, socket, next))
+})
 io.on("connection", (socket)=> {
 
-    const user = {
-        _id: "asdsda",
-        name: "Kaushal"
-
-    }
+    const user = socket.user;
     userSocketIDs.set(user._id.toString(), socket.id)
     console.log(userSocketIDs)
 
@@ -77,6 +76,8 @@ io.on("connection", (socket)=> {
             sender: user._id,
             chat: chatId
         }
+
+        
 
         const membersSocket = getSockets(members)
         io.to(membersSocket).emit(NEW_MESSAGE, {
