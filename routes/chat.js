@@ -5,7 +5,7 @@ import {
   newGroupChat,
   getMyGroups,
   addMembers,
-  removeMembers,
+  removeMember,
   leaveGroup,
   sendAttachments,
   getChatDetails,
@@ -20,14 +20,41 @@ const app = express.Router();
 
 // protected routes
 app.use(isAuthenticated);
-app.post("/new",newGroupValidator(),validateHandler, newGroupChat);
-app.get("/my",getMyChats);
+
+app.post("/new", newGroupValidator(), validateHandler, newGroupChat);
+
+app.get("/my", getMyChats);
+
 app.get("/my/groups", getMyGroups);
-app.put("/addmembers", addMemberValidator(), validateHandler,addMembers);
-app.put("/removemember", removeMemberValidator(), validateHandler, removeMembers);
-app.delete("/leave/:id",chatIdValidator(),validateHandler,leaveGroup)
-app.post("/message", attachmentsMulter,sendAttachmentsValidator(),validateHandler, sendAttachments)
-app.get("/message/:id",chatIdValidator(),validateHandler,getMessages)
-app.route("/:id").get(chatIdValidator(),validateHandler,getChatDetails).put( renameValidator, validateHandler,renameGroup).delete(chatIdValidator,validateHandler,deleteChat)
+
+app.put("/addmembers", addMemberValidator(), validateHandler, addMembers);
+
+app.put(
+  "/removemember",
+  removeMemberValidator(),
+  validateHandler,
+  removeMember
+);
+
+app.delete("/leave/:id", chatIdValidator(), validateHandler, leaveGroup);
+
+// Send Attachments
+app.post(
+  "/message",
+  attachmentsMulter,
+  sendAttachmentsValidator(),
+  validateHandler,
+  sendAttachments
+);
+
+// Get Messages
+app.get("/message/:id", chatIdValidator(), validateHandler, getMessages);
+
+// Get Chat Details, rename,delete
+app
+  .route("/:id")
+  .get(chatIdValidator(), validateHandler, getChatDetails)
+  .put(renameValidator(), validateHandler, renameGroup)
+  .delete(chatIdValidator(), validateHandler, deleteChat);
 
 export default app;

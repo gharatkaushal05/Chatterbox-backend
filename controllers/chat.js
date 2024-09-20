@@ -128,7 +128,7 @@ const addMembers = TryCatch(async (req, res, next) => {
   });
 });
 
-const removeMembers = TryCatch(async (req, res, next) => {
+const removeMember = TryCatch(async (req, res, next) => {
   const { userId, chatId } = req.body;
 
   const [chat, userThatWillBeRemoved] = await Promise.all([
@@ -313,9 +313,10 @@ const renameGroup = TryCatch(async (req, res, next) => {
   await chat.save();
 
   emitEvent(req, REFETCH_CHATS, chat.members);
+
   return res.status(200).json({
     success: true,
-    message: "Group renamed Successfully",
+    message: "Group renamed successfully",
   });
 });
 
@@ -406,7 +407,7 @@ export {
   getMyChats,
   getMyGroups,
   addMembers,
-  removeMembers,
+  removeMember,
   leaveGroup,
   sendAttachments,
   getChatDetails,
